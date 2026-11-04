@@ -1,0 +1,21 @@
+{
+  "name": "trackada-anyonym",
+  "version": "1.0.0",
+  "description": "",
+  "main": "checktrack.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anyonym/trackada-anyonym.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/anyonym/trackada-anyonym/issues"
+  },
+  "homepage": "https://github.com/anyonym/trackada-anyonym#readme"
+}
