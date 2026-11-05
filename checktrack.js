@@ -2,6 +2,7 @@ import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { homedir } from "os";
 import readline from "readline";
+// import { styleText } from "util";
 
 // TODO : charger et parser track.json
 const track = JSON.parse(readFileSync("track.json", "utf-8")); // récupère tout le fichier track.json
@@ -16,7 +17,6 @@ const dossierProjets = join(
 	"projets",
 );
 
-// TODO : vérifier que ce dossier existe et afficher le résultat
 // 1. vérifier que le dossier existe au bon endroit
 function verifierProjet(projet) {
 	const erreurs = [];
@@ -24,7 +24,7 @@ function verifierProjet(projet) {
 	const cheminProjet = join(dossierProjets, projet.name);
 	// Condition pour savoir si le projet existe ou non dans mon dossier
 	if (!existsSync(cheminProjet)) {
-		erreurs.push("Le dossier n'existe pas : vérifie ton arborescence");
+		erreurs.push("le dossier n'existe pas ou n'est pas nommé correctement");
 		return erreurs;
 	}
 	// 2. Vérifier que le repository git est initialisé
@@ -58,27 +58,29 @@ function formaterListe(elements) {
 
 function lancerVerification() {
 	let nbProjetsCorrects = 0;
-	// on vérifie si le dossier projets existe et on affiche
+	// TODO : vérifier que ce dossier existe et afficher le résultat
+	// vérification si le dossier projets existe et affichage
 	if (existsSync(dossierProjets)) {
-		console.log("✅ dossier projets existe");
+		console.log(green("✅ dossier ~/ada-tech/bloc1/projets"));
+		console.log("");
 	} else {
-		console.log("❌ dossier projets introuvable");
+		console.log(red("❌ dossier ~/ada-tech/bloc1/projetsdossier projets introuvable"));
+		console.log("Le dossier n'existe pas : vérifie ton arborescence de la semaine 1");
+		console.log("");
 	}
 	// TODO : pour chaque projet de la track,
 	// récupérer tous les projets dans le JSON
 	const projets = track.projects;
 	// on prend les projet un par un
 	projets.forEach((projet) => {
-		// On récupère toutes les erreurs dans un array pour chaque projet
+		// récupération de toutes les erreurs dans un array pour chaque projet
 		const erreurs = verifierProjet(projet);
-		// SI 0 erreur afficher ✅
-		// Si des erreurs afficher ❌ + la liste des erreurs
-		//afficher ✅ ou ❌ avec les erreurs dans l'ordre
+		// afficher ✅ ou ❌ avec les erreurs dans l'ordre
 		if (erreurs.length === 0) {
-			console.log(`✅ dossier du projet ${projet.name}`);
+			console.log(green(`✅ dossier du projet ${projet.name}`));
 			nbProjetsCorrects++; // incrémente le nombre de dossiers qui ne sont pas en erreur
 		} else {
-			console.log(`❌ dossier du projet ${projet.name}`);
+			console.log(red(`❌ dossier du projet ${projet.name}`));
 			erreurs.forEach((erreur) => console.log(`- ${erreur}`));
 		}
 		console.log("");
@@ -90,16 +92,27 @@ function lancerVerification() {
 	const symbole = nbProjetsCorrects === total ? "✅" : "❌";
 
 	const message = `${pourcentage}% des projets sont initialisés correctement`;
-	console.log(`${symbole} ${message} (${nbProjetsCorrects}/${total})`);
+	console.log(red(`${symbole} ${message} (${nbProjetsCorrects}/${total})`));
 }
 
+// styleText('green', "- ✅ Le dossier existe")
+// styleText('red', "- ❌ Le dossier n'existe pas")
+const green = (str) => {
+    return "\x1b[32m" + str + "\x1b[0m";
+}
+const red = (str) => {
+    return "\x1b[31m" + str + "\x1b[0m";
+}
+
+// Interaction avec l'utilisateur
 const rl = readline.createInterface({
 	input: process.stdin,
 	output: process.stdout,
 });
 
-rl.question("Lancer la vérification ? (o/n)", (reponse) => {
+rl.question("Lancer la vérification ? (o/n) ", (reponse) => {
 	if (reponse.trim().toLocaleLowerCase() === "o") {
+		console.log("");
 		lancerVerification();
 	} else {
 		console.log("Vérification annulée");
