@@ -1,20 +1,7 @@
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { homedir } from "os";
-// import readline from "readline";
-
-// const rl = readline.createInterface({
-//   input: process.stdin,
-//   output: process.stdout,
-// });
-
-// rl.question("Lancer la vérification ? (o/n)", (reponse) => {
-//   if (reponse.trim().toLocaleLowerCase() === "o") {
-//     return verifierProjet();
-//   } else {
-//     console.log("Vérification annulée");
-//   }
-// });
+import readline from "readline";
 
 // TODO : charger et parser track.json
 const track = JSON.parse(readFileSync("track.json", "utf-8")); // récupère tout le fichier track.json
@@ -61,7 +48,6 @@ function verifierProjet(projet) {
   return erreurs;
 }
 
-
 function formaterListe(elements) {
   if (elements.length === 1) {
     return elements[0]; // élément a
@@ -72,6 +58,7 @@ function formaterListe(elements) {
 }
 
 function lancerVerification() {
+  let nbProjetsCorrects = 0;
   // on vérifie si le dossier projets existe et on affiche
   if (existsSync(dossierProjets)) {
     console.log("✅ dossier projets existe");
@@ -90,22 +77,34 @@ function lancerVerification() {
     //  afficher ✅ ou ❌ avec les erreurs dans l'ordre
     if (erreurs.length === 0) {
       console.log(`✅ dossier du projet ${projet.name}`);
+      nbProjetsCorrects++; // dossiers qui ne sont pas en erreur
     } else {
       console.log(`❌ dossier du projet ${projet.name}`);
       erreurs.forEach((erreur) => console.log(`- ${erreur}`));
     }
     console.log("");
   });
+
+  // TODO : calculer et afficher le pourcentage de projets corrects
+  const total = track.projects.length;
+  const pourcentage = Math.round((nbProjetsCorrects / total) * 100);
+  const symbole = nbProjetsCorrects === total ? "✅" : "❌";
+
+  const message = `${pourcentage}% des projets sont initialisés correctement`;
+  console.log(`${symbole} ${message} (${nbProjetsCorrects}/${total})`);
 }
 
-// TODO : calculer et afficher le pourcentage de projets corrects
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
-// const total = track.projects.length
-// const pourcentage = Math.round((projetsCorrects / total) * 100)
-// const symbole = projetsCorrects === total ? "✅" : "❌"
-
-// const message = `${pourcentage}% des projets sont initialisés correctement`
-// console.log(`${symbole} ${message} (${projetsCorrects}/${total})`)
-
-// rl.close();
-lancerVerification();
+rl.question("Lancer la vérification ? (o/n)", (reponse) => {
+  if (reponse.trim().toLocaleLowerCase() === "o") {
+    return verifierProjet();
+  } else {
+    console.log("Vérification annulée");
+  }
+});
+rl.close();
+// lancerVerification();
