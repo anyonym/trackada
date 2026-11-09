@@ -2,6 +2,7 @@ import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { homedir } from "os";
 import readline from "readline";
+import { calculerPourcentage, formaterListe } from "./utils.js";
 
 // TODO : charger et parser track.json
 const track = JSON.parse(readFileSync("track.json", "utf-8")); // récupère tout le fichier track.json
@@ -17,7 +18,7 @@ const dossierProjets = join(
 );
 
 // 1. vérifier que le dossier existe au bon endroit
-function verifierProjet(projet) {
+function verifierDossier(projet) {
   const erreurs = [];
   // On récupère le chemin de chaque projet
   const cheminProjet = join(dossierProjets, projet.name);
@@ -46,15 +47,6 @@ function verifierProjet(projet) {
   return erreurs;
 }
 
-function formaterListe(elements) {
-  if (elements.length === 1) {
-    return elements[0]; // élément a
-  }
-  const debut = elements.slice(0, -1).join(", "); // = éléments a, b
-  const dernier = elements[elements.length - 1]; // = élement c
-  return `${debut} et ${dernier}`; // -> il manque a, b et c
-}
-
 function lancerVerification() {
   let nbProjetsCorrects = 0;
   // TODO : vérifier que ce dossier existe et afficher le résultat
@@ -77,7 +69,7 @@ function lancerVerification() {
   // on prend les projet un par un
   projets.forEach((projet) => {
     // récupération de toutes les erreurs dans un array pour chaque projet
-    const erreurs = verifierProjet(projet);
+    const erreurs = verifierDossier(projet);
     // afficher ✅ ou ❌ avec les erreurs dans l'ordre
     if (erreurs.length === 0) {
       console.log(green(`✅ dossier du projet ${projet.name}`));
@@ -90,10 +82,9 @@ function lancerVerification() {
   });
 
   // TODO : calculer et afficher le pourcentage de projets corrects
-  const total = track.projects.length;
-  const pourcentage = Math.round((nbProjetsCorrects / total) * 100);
+  const pourcentage = calculerPourcentage(nbProjetsCorrects, track.projects.length);
+  const total = track.projects.length
   const symbole = nbProjetsCorrects === total ? "✅" : "❌";
-
   const message = `${pourcentage}% des projets sont initialisés correctement`;
   if (pourcentage === 100) {
     console.log(green(`${symbole} ${message} (${nbProjetsCorrects}/${total})`));

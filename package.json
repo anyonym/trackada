@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "checktrack.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "repository": {
     "type": "git",
@@ -13,9 +14,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "bugs": {
     "url": "https://github.com/anyonym/trackada-anyonym/issues"
   },
-  "homepage": "https://github.com/anyonym/trackada-anyonym#readme"
+  "homepage": "https://github.com/anyonym/trackada-anyonym#readme",
+  "devDependencies": {
+    "jest": "^30.5.2"
+  }
 }
